@@ -86,6 +86,17 @@ export default function AIClassroomPage() {
         setCourseTitle(c.title as string);
       }
 
+      const [enrollmentResult, batchResult] = await Promise.all([
+        supabase.from('enrollments').select('id').eq('user_id', user.id).eq('course_id', courseId).maybeSingle(),
+        supabase.from('batch_students').select('batch_id').eq('user_id', user.id).maybeSingle(),
+      ]);
+
+      if (!enrollmentResult.data && !batchResult.data) {
+        toast({ title: 'Enrollment required', description: 'Please enroll in this course or join a batch first.', variant: 'destructive' });
+        router.push(`/courses/${courseId}/batches`);
+        return;
+      }
+
       if (lessonId) {
         const { data: lesson } = await supabase
           .from('lessons')

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -69,6 +69,7 @@ type RelatedCourse = {
 
 export default function CourseDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params.slug as string;
   const { user } = useAuth();
   const { toast } = useToast();
@@ -232,6 +233,23 @@ export default function CourseDetailPage() {
     router.push(`/courses/${course.slug}/batches`);
   };
 
+  const handleStartFree = async () => {
+    if (!course || !user) return;
+    const supabase = createClient();
+    const { data: existing } = await supabase
+      .from('enrollments')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('course_id', course.id)
+      .maybeSingle();
+    if (!existing) {
+      await supabase
+        .from('enrollments')
+        .insert({ user_id: user.id, course_id: course.id, progress: 0, enrolled_at: new Date().toISOString() });
+    }
+    router.push(`/courses/${course.slug}/learn`);
+  };
+
   if (loading) {
     return (
       <>
@@ -340,11 +358,9 @@ export default function CourseDetailPage() {
                         </Link>
                       </Button>
                     ) : course.price === 0 ? (
-                      <Button asChild size="lg" className="mt-4 w-full">
-                        <Link href={`/courses/${course.slug}/learn`}>
-                          <PlayCircle className="mr-2 h-5 w-5" />
-                          Start Free Course
-                        </Link>
+                      <Button size="lg" className="mt-4 w-full" onClick={handleStartFree}>
+                        <PlayCircle className="mr-2 h-5 w-5" />
+                        Start Free Course
                       </Button>
                     ) : (
                       <div className="mt-4 flex gap-2">

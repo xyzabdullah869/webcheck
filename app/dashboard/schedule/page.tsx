@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { Calendar, Clock, Loader as Loader2 } from 'lucide-react';
-import { StudentSidebar } from '@/components/student-sidebar';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/empty-states';
@@ -76,11 +75,8 @@ export default function SchedulePage() {
 
   if (loading || authLoading) {
     return (
-      <div className="flex min-h-screen">
-        <StudentSidebar />
-        <div className="flex flex-1 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -97,9 +93,8 @@ export default function SchedulePage() {
   });
 
   return (
-    <div className="flex min-h-screen">
-      <StudentSidebar />
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+    <div>
+      <main>
         <div className="mb-6">
           <h1 className="font-display text-2xl font-bold sm:text-3xl">My Schedule</h1>
           <p className="mt-1 text-muted-foreground">Your weekly class schedule across all enrolled batches.</p>

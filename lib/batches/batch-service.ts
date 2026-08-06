@@ -196,17 +196,33 @@ export async function enrollStudent(batchId: string, userId: string): Promise<bo
 
   const { data: batch } = await supabase
     .from("batches")
-    .select("max_students")
+    .select("max_students, course_id")
     .eq("id", batchId)
     .maybeSingle();
 
   if (batch) {
+    const b = batch as Record<string, unknown>;
     const { count } = await supabase
       .from("batch_students")
       .select("*", { count: "exact", head: true })
       .eq("batch_id", batchId);
-    if ((count ?? 0) >= ((batch as Record<string, unknown>).max_students as number)) {
+    if ((count ?? 0) >= (b.max_students as number)) {
       return false;
+    }
+
+    const courseId = b.course_id as string | null;
+    if (courseId) {
+      const { data: enrollment } = await supabase
+        .from("enrollments")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("course_id", courseId)
+        .maybeSingle();
+      if (!enrollment) {
+        await supabase
+          .from("enrollments")
+          .insert({ user_id: userId, course_id: courseId, progress: 0, enrolled_at: new Date().toISOString() });
+      }
     }
   }
 
