@@ -34,10 +34,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <RouteGuard requiredRole="admin">
-      <div className="min-h-screen bg-muted/20">
-        <div className="flex">
+      <div className="h-screen overflow-hidden bg-muted/20">
+        <div className="flex h-full">
           <AdminSidebar />
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-y-auto">
             <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b bg-background/80 px-4 pl-20 backdrop-blur lg:px-8">
               <div className="relative hidden flex-1 sm:block sm:max-w-xs">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
